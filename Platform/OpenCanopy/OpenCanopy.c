@@ -976,8 +976,8 @@ GuiDrawLoop (
   EFI_STATUS           Status;
   BOOLEAN              Result;
 
-  INTN                 InputKey;
-  BOOLEAN              Modifier;
+  OC_PICKER_KEY_INFO   PickerKeyInfo;
+  BOOLEAN              InTypingContext;
   GUI_PTR_EVENT        PointerEvent;
   GUI_OBJ              *TempObject;
   GUI_OBJ              *HoldObject;
@@ -994,6 +994,7 @@ GuiDrawLoop (
 
   ASSERT (DrawContext != NULL);
 
+  InTypingContext   = FALSE;
   mNumValidDrawReqs = 0;
   FrameTime         = 0;
   HoldObject        = NULL;
@@ -1105,7 +1106,7 @@ GuiDrawLoop (
       //
       // Process key events. Only allow one key at a time for now.
       //
-      Status = GuiKeyRead (mKeyContext, &InputKey, &Modifier);
+      Status = GuiKeyRead (mKeyContext, &PickerKeyInfo, InTypingContext);
       if (!EFI_ERROR (Status)) {
         ASSERT (DrawContext->KeyEvent != NULL);
         DrawContext->KeyEvent (
@@ -1114,8 +1115,8 @@ GuiDrawLoop (
           DrawContext->GuiContext,
           0,
           0,
-          InputKey,
-          Modifier
+          PickerKeyInfo.OcKeyCode,
+          PickerKeyInfo.OcModifiers
           );
         //
         // If detected key press then disable menu timeout
